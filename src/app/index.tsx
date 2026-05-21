@@ -1,98 +1,200 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+// Quiz data: True/False geography questions
+const questions = [
+  {
+    text: 'Canberra is the capital of Australia.',
+    answer: true,
+  },
+  {
+    text: 'The Amazon River is the longest river in the world.',
+    answer: false,
+  },
+  {
+    text: 'Mount Everest is located in the Himalayas.',
+    answer: true,
+  },
+  {
+    text: 'Russia is the largest country by land area.',
+    answer: true,
+  },
+  {
+    text: 'The Sahara Desert is located in South America.',
+    answer: false,
+  },
+  {
+    text: 'Japan is made up of over 6,000 islands.',
+    answer: true,
+  },
+  {
+    text: 'The Great Wall of China is visible from space with the naked eye.',
+    answer: false,
+  },
+  {
+    text: 'Africa has more countries than any other continent.',
+    answer: true,
+  },
+  {
+    text: 'Iceland is covered mostly in ice.',
+    answer: false,
+  },
+  {
+    text: 'The Pacific Ocean is the largest ocean on Earth.',
+    answer: true,
+  },
+];
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
+export default function QuizScreen() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const router = useRouter();
+
+  const currentQuestion = questions[currentIndex];
+
+  // Handle True/False button press
+  const handleAnswer = (userAnswer: boolean) => {
+    if (userAnswer === currentQuestion.answer) {
+      Alert.alert('Correct!', 'Great job!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            // Advance to next question (wrap around)
+            setCurrentIndex((prev) => (prev + 1) % questions.length);
+          },
+        },
+      ]);
+    } else {
+      Alert.alert('Incorrect!', 'Try again.');
+    }
+  };
+
+  // Navigate to previous question (wraps around)
+  const handlePrev = () => {
+    setCurrentIndex((prev) =>
+      prev === 0 ? questions.length - 1 : prev - 1
     );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+  };
+
+  // Navigate to next question (wraps around)
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % questions.length);
+  };
+
+  // Navigate to cheat screen, passing the current answer
+  const handleCheat = () => {
+    router.push({
+      pathname: '/cheat',
+      params: { answer: String(currentQuestion.answer) },
+    });
+  };
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <View style={styles.container}>
+      {/* Question text centered in the screen */}
+      <View style={styles.questionContainer}>
+        <Text style={styles.questionText}>{currentQuestion.text}</Text>
+      </View>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+      {/* True / False buttons */}
+      <View style={styles.answerRow}>
+        <TouchableOpacity
+          style={styles.answerButton}
+          onPress={() => handleAnswer(true)}
+        >
+          <Text style={styles.buttonText}>TRUE</Text>
+        </TouchableOpacity>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        <TouchableOpacity
+          style={styles.answerButton}
+          onPress={() => handleAnswer(false)}
+        >
+          <Text style={styles.buttonText}>FALSE</Text>
+        </TouchableOpacity>
+      </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+      {/* Prev / Next buttons with icons */}
+      <View style={styles.navRow}>
+        <TouchableOpacity style={styles.navButton} onPress={handlePrev}>
+          <Ionicons name="caret-back" size={18} color="#FFFFFF" />
+          <Text style={styles.buttonText}>PREV</Text>
+        </TouchableOpacity>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        <TouchableOpacity style={styles.navButton} onPress={handleNext}>
+          <Text style={styles.buttonText}>NEXT</Text>
+          <Ionicons name="caret-forward" size={18} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Cheat button */}
+      <TouchableOpacity style={styles.cheatButton} onPress={handleCheat}>
+        <Text style={styles.buttonText}>CHEAT</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
+    backgroundColor: '#F5F5F5',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    paddingHorizontal: 20,
   },
-  title: {
+  questionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  questionText: {
+    fontSize: 18,
     textAlign: 'center',
+    color: '#333333',
   },
-  code: {
-    textTransform: 'uppercase',
+  answerRow: {
+    flexDirection: 'row',
+    gap: 20,
+    marginBottom: 20,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  answerButton: {
+    backgroundColor: '#6A5ACD',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+  },
+  navRow: {
+    flexDirection: 'row',
+    gap: 20,
+    marginBottom: 20,
+  },
+  navButton: {
+    backgroundColor: '#6A5ACD',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  cheatButton: {
+    backgroundColor: '#6A5ACD',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    marginBottom: 60,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
