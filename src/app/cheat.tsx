@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function CheatScreen() {
   const { answer } = useLocalSearchParams<{ answer: string }>();
@@ -19,12 +19,12 @@ export default function CheatScreen() {
       )}
 
       {/* Show Answer button */}
-      <TouchableOpacity
+      <Pressable
         style={styles.showButton}
         onPress={() => setShowAnswer(true)}
       >
         <Text style={styles.buttonText}>SHOW ANSWER</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

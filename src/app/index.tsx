@@ -3,9 +3,9 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   Alert,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -105,38 +105,38 @@ export default function QuizScreen() {
 
       {/* True / False buttons */}
       <View style={styles.answerRow}>
-        <TouchableOpacity
+        <Pressable
           style={styles.answerButton}
           onPress={() => handleAnswer(true)}
         >
           <Text style={styles.buttonText}>TRUE</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
+        <Pressable
           style={styles.answerButton}
           onPress={() => handleAnswer(false)}
         >
           <Text style={styles.buttonText}>FALSE</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Prev / Next buttons with icons */}
       <View style={styles.navRow}>
-        <TouchableOpacity style={styles.navButton} onPress={handlePrev}>
+        <Pressable style={styles.navButton} onPress={handlePrev}>
           <Ionicons name="caret-back" size={18} color="#FFFFFF" />
           <Text style={styles.buttonText}>PREV</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity style={styles.navButton} onPress={handleNext}>
+        <Pressable style={styles.navButton} onPress={handleNext}>
           <Text style={styles.buttonText}>NEXT</Text>
           <Ionicons name="caret-forward" size={18} color="#FFFFFF" />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Cheat button */}
-      <TouchableOpacity style={styles.cheatButton} onPress={handleCheat}>
+      <Pressable style={styles.cheatButton} onPress={handleCheat}>
         <Text style={styles.buttonText}>CHEAT</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
